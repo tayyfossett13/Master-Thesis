@@ -1,0 +1,116 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(lme4)
+library(lmerTest)
+library(Matrix)
+library(multcomp)
+library(latex2exp)
+library(ggfortify)
+library(pander)
+library(tidyverse)
+library(ggplot2)
+panderOptions("missing", "")
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+panderOptions('keep.trailing.zeros', TRUE)
+
+# r_refs from the papaja package can generate a bibliograph file of loaded
+# packages
+
+
+```
+
+```{r}
+Sparrow <- read.csv('Sparrow.csv')
+Sparrow$Trial <- factor(Sparrow$Trial)
+```
+
+```{r}
+summary(Sparrow)
+head(Sparrow)
+```
+```{r}
+out <- t.test(FID ~ Habitat, data = subset(Sparrow, Trial == 5))
+out
+```
+
+```{r}
+#S.urban <- aov(rank(FID) ~ Trial, subset(Sparrow, Habitat == "Urban"))
+#S.rural <- aov(rank(FID) ~ Trial, subset(Sparrow, Habitat == "Rural"))
+
+#summary(S.urban)
+
+#summary(S.rural)
+```
+
+
+```{r}
+Song <- lmer(rank(FID) ~ Trial * Habitat + (1|ID), Sparrow)
+anova (Song)
+rand(Song)
+```		
+
+```{r}
+Ylab <- TeX("Flight Initiation Distance (Meters)")
+Figure1 <- ggplot(Song, aes(x = Trial, y = (FID), color = Habitat)) +
+  geom_boxplot(coef = 5) +
+  geom_point(width = 0.3, position = position_jitterdodge(dodge.width = 0.9)) +
+  geom_point(stat = 'summary', fun.y = mean, shape = '+', size = 5,
+             color = 'blue') +
+  #scale_y_continuous(name = Ylab, limits = c(0,25),
+  #                   breaks = seq(0,25,5), expand = c(0,0),
+  #                   labels = c("0","5", "10", "15", "20","25")) +
+  xlab("Trial") +
+  theme_classic(base_size = 18, base_family = 'Times') +
+  theme(axis.title.x = element_text(margin = margin(t = 20))) +
+    ylab("Flight Initiation Distance (m)")
+Figure1
+```
+
+```{r}
+SparrowCourtney <- read.csv('Courtney Sparrow.csv')
+SparrowCourtney$Trial <- factor(SparrowCourtney$Trial)
+```
+
+```{r}
+summary(SparrowCourtney)
+head(SparrowCourtney)
+```
+```{r}
+#S.urban1 <- aov(rank(FID) ~ Trial, subset(SparrowCourtney, Habitat == "Urban"))
+#S.rural1 <- aov(rank(FID) ~ Trial, subset(SparrowCourtney, Habitat == "Rural"))
+
+#summary(S.urban1)
+
+#summary(S.rural1)
+```
+
+```{r}
+SongCourtney <- lmer(rank(FID) ~ Trial * Habitat + (1|ID), SparrowCourtney)
+anova (SongCourtney)
+```
+
+```{r}
+Figure1 <- ggplot(SongCourtney, aes(x = Trial, y = rank(FID), color = Habitat)) +
+  geom_boxplot(coef = 5) +
+  geom_point(width = 0.3, position = position_jitterdodge(dodge.width = 0.9)) +
+  geom_point(stat = 'summary', fun.y = mean, shape = '+', size = 5,
+             color = 'blue') +
+  #scale_y_continuous(name = Ylab, limits = c(0,25),
+                   # breaks = seq(0,25,5), expand = c(0,0),
+                   #labels = c("0","5", "10", "15", "20","25")) +
+  xlab("Trial") +
+  theme_classic(base_size = 18, base_family = 'Times') +
+  theme(axis.title.x = element_text(margin = margin(t = 20))) +
+  ylab("Flight Initiaiton Distance (m)")
+
+
+
+
+
+Figure1
+```
+
